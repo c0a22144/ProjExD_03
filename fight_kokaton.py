@@ -135,6 +135,26 @@ class Beam:
         self.rct.move_ip(self.vx, self.vy)
         screen.blit(self.img, self.rct)
 
+class Explosion:
+    """
+    エフェクトに関するクラス
+    """
+    def __init__(self, bomb:Bomb ,life:int):
+        exp_img = pg.image.load("ex03/fig/explosion.gif")
+        self._imgs = [exp_img, 
+                      pg.transform.flip((exp_img), True, False),
+                      pg.transform.flip((exp_img), True, True),
+                      pg.transform.flip((exp_img), False, True)]
+        self._life = life
+        self._img = self._imgs[0]
+        self._rct = self._img.get_rect()
+        self._rct.center = bomb.rct.center
+
+    def update(self, screen: pg.surface):
+        if self._life != 0:
+            screen.blit(self._imgs[self._life % 4], self._rct.center)
+            self._life -=1
+
 
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
@@ -142,6 +162,7 @@ def main():
     bg_img = pg.image.load("ex03/fig/pg_bg.jpg")
     bird = Bird(3, (900, 400))
     bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS)]
+    explosions = []
     beam = None
 
     clock = pg.time.Clock()
@@ -155,6 +176,9 @@ def main():
 
         
         screen.blit(bg_img, [0, 0])
+
+        for explosion in explosions:
+            explosion.update(screen)
         for bomb in bombs:
             if bird.rct.colliderect(bomb.rct):
                 # ゲームオーバー時に，こうかとん画像を切り替え，1秒間表示させる
@@ -173,10 +197,12 @@ def main():
         for i, bomb in enumerate(bombs):
             if beam is not None and bomb is not None:
                 if bomb.rct.colliderect(beam.rct):
-                    bomb[i] = None
+                    explosions.append(Explosion(bomb,100))
+                    bombs[i] = None
                     beam = None
+                    del bombs[i]
                     bird.change_img(6, screen)
-                    pg.display.update()
+                    break
         
 
         key_lst = pg.key.get_pressed()
@@ -184,6 +210,8 @@ def main():
         bombs = [bomb for bomb in bombs if bomb is not None]
         for bomb in bombs:
             bomb.update(screen)
+        for explosion in explosions:
+            explosion.update(screen)
         if beam is not None:
             beam.update(screen)
         pg.display.update()

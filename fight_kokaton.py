@@ -206,7 +206,7 @@ def main():
         
 
         key_lst = pg.key.get_pressed()
-        bird.update(key_lst, screen)
+        bird.update(key_lst, screen)　
         bombs = [bomb for bomb in bombs if bomb is not None]
         for bomb in bombs:
             bomb.update(screen)

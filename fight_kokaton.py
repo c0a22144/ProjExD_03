@@ -162,7 +162,9 @@ def main():
                 pg.display.update()
                 time.sleep(1)
                 return
-        
+        """
+
+        """
         if bomb is not None:
             if bird.rct.colliderect(bomb.rct):
                 bird.change_img(8, screen)
@@ -178,7 +180,9 @@ def main():
                     bird.change_img(6, screen)
                     pg.display.update()
         
-
+        """
+        ビームと弾が当たったら消える
+        """
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
         bombs = [bomb for bomb in bombs if bomb is not None]
